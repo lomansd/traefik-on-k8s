@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: https-proxy
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`https.traefik.me`)
+      kind: Rule
+      services:
+        - name: traefic-demo
+          port: 80
+  tls:
+    secretName: https-cert-store
+    
+  

@@ -1,0 +1,44 @@
+:Author:    Dennis Lomans
+:Email:     dennis.lomans@philips.com
+:doctype:   book
+:localdashboard9000: http://127.0.0.1:9000/dashboard/
+:localdashboard80: http://localhost:80/dashboard/
+
+
+[toc]
+
+= Installation of Traefik on an kubernetes (k8s) cluster.
+
+Before you start make sure you have `helm` installed.
+
+[NOTE]
+====
+For the examples the url `\*.traefik.demo` is used. Be sure to add `*.traefik.demo` to you host(s) file, e.g. `127.0.0.1 *.traefik.demo`
+
+When reading the trying the examples I assue you change to the directory of the example.
+====
+
+== Installation using helm
+
+[source,bash]
+----
+helm repo add traefik https://traefik.github.io/charts
+helm repo update
+helm install traefik traefik/traefik
+----
+
+After installation update the installation with the following command:
+
+[source,bash]
+----
+kubectl apply -f traefik-deployment.yaml
+----
+
+include::./dashboard/dashboard.adoc[leveloffset=1]
+
+include::./http-proxy/http-proxy.adoc[leveloffset=1]
+
+include::./https-proxy/https-proxy.adoc[leveloffset=1]
+
+include::./mtls-proxy/mtls-proxy.adoc[leveloffset=1]
+

@@ -1,0 +1,52 @@
+= Simple HTTPS Proxy
+:http-demo-url: https://https.traefik.me
+
+== Creating a deployment and a service
+
+The file `service-deployment.yaml` contains a simple depoyment and service.
+
+In a terminal run the command:
+[source,bash]
+----
+  kubectl.exe apply -f ./service-deployment.yaml
+----
+
+The deployed service should then be available on link:{http-demo-url}[here]
+
+
+== Certificates
+Before we can add an _IngressRoute_, we need to add server certificates to the k8s cluster.
+Assuming you have openssl installed, if not please install it.
+
+Creating certificates using the command : 
+[source,bash]
+----
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt -subj "/CN=https.traefik.me"
+----
+
+Create a k8s secret using the server credential file and key file : 
+[source,bash]
+----
+kubectl create secret tls https-cert-store --key .\server.key --cert .\server.crt
+----
+
+== Exposing the service via an IngressRoute
+
+
+The yaml file:
+[source,yml]
+----
+include::https-proxy.yaml[]
+----
+
+Where the entrypoint web is the default for port 80.
+In a terminal run the command:
+[source,bash]
+----
+  kubectl.exe apply -f ./https-proxy.yaml
+----
+
+The http-demo should be available on link:{https-demo-url}[here]
+
+You will be presented with the warning screen, I assume you know how to deal ith that.
+

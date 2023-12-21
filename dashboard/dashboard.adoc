@@ -1,0 +1,31 @@
+= Traefik Dashboard
+
+
+Traefik comes with a dashboard which can either be exposed via port 9000 or via an _IngressRoute_.
+
+[CAUTION]
+When the URL to the dashboard is entered manually do not foget the forward slash '*/*' after dashboard, otherwise you'll be presented with a nice `404` error message.  
+
+== Exposure via port 9000
+To expose the dashboard via port 9000, run the following command in a new terminal.
+
+[source,bash]
+----
+kubectl port-forward $(kubectl get pods --selector "app.kubernetes.io/name=traefik" --output=name) 9000:9000
+----
+
+[NOTE]
+For a local kubernetes cluster, the dashboard is accessible from link:{localdashboard9000}[here]. 
+
+== Exposure via the IngressRoute
+To expose the dashboard via the _IngressRoute_, run the following command in a new terminal.
+
+[source,bash]
+----
+kubectl.exe apply -f .\dashboard.yaml
+----
+
+The dashboard will be available on the default http port.
+
+[NOTE]
+For a local kubernetes cluster, the dashboard is accessible from link:{localdashboard80}[here]. 

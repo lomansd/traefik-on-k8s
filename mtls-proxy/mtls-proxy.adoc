@@ -1,0 +1,89 @@
+= Simple mTls Proxy
+:http-demo-url: https://mtls.traefik.me
+
+== Creating a deployment and a service
+
+The file `service-deployment.yaml` contains a simple depoyment and service.
+
+In a terminal run the command:
+```bash
+  kubectl.exe apply -f ./service-deployment.yaml
+```
+
+The deployed service should then be available on link:{http-demo-url}[here]
+
+
+== Certificates
+Before we can add an _IngressRoute_, we need to add server certificates to the k8s cluster.
+Assuming you have openssl installed, if not please install it.
+
+=== Creating certificates:
+
+For mTls you need multiple certificates.
+
+.Needed certificates
+. CA Root Certificate + 
+The one certificate we all trust
+. Signed Client certificate +
+The certificate for the server to trust the client
+. Server certificate
+The certificate for the client to trust the server
+
+*Root CA Certificate*
+
+[source,bash]
+----
+openssl req -x509 -sha256 -newkey rsa:4096 -keyout ca.key -out ca.crt -days 356 -nodes -subj '/CN=My Cert Authority'
+----
+
+
+*Signed Client certificate*
+
+.Steps to take
+* Create a _normal_ client certificate
+[source,bash]
+----
+openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj ‘/CN=My Client’
+----
+* Sign the certificate with the Root CA
+[source,bash]
+----
+openssl x509 -req -sha256 -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 02 -out client.crt
+----
+
+* Create the Server certificate
+[source,bash]
+----
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt -subj "/CN=mtls.traefik.me"
+----
+
+* Create a k8s CA secret using the CA credential: 
+[source,bash]
+----
+kubectl create secret generic secret-ca --from-file=ca.crt
+----
+
+* Create a k8s secret using the server credential file and key file : 
+[source,bash]
+----
+kubectl create secret tls mtls-cert-store --key .\server.key --cert .\server.crt
+----
+
+== Exposing the service via an IngressRoute
+
+
+The yaml file:
+```yaml
+include::mtls-proxy.yaml[]
+```
+
+Where the entrypoint web is the default for port 80.
+In a terminal run the command:
+```bash
+  kubectl.exe apply -f ./mts-proxy.yaml
+```
+
+The http-demo should be available on link:{mtls-demo-url}[here]
+
+You will be presented with the warning screen, I assume you know how to deal ith that.
+

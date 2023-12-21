@@ -1,0 +1,30 @@
+= Simple HTTP Proxy
+:http-demo-url: http://http.traefik.me
+
+== Creating a deployment and a service
+
+The file `service-deployment.yaml` contains a simple depoyment and service.
+
+In a terminal run the command:
+[source,bash]
+----
+  kubectl.exe apply -f ./service-deployment.yaml
+----
+
+
+== Exposing the service via an IngressRoute
+
+The yaml file:
+[source,yml]
+----
+include::http-proxy.yaml[]
+----
+
+Where the entrypoint web is the default for port 80.
+In a terminal run the command:
+[source,bash]
+----
+  kubectl.exe apply -f ./http-proxy.yaml
+----
+
+The http-demo should be available on link:{http-demo-url}[here]
